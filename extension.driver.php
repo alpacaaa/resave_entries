@@ -48,7 +48,7 @@ class extension_resave_entries extends Extension
 			$page = $_REQUEST['resave']['page'];
 			$total = $_REQUEST['resave']['total'];
 			
-			if ($total && $page * $rate > $total)
+			if ($total && $page > $total)
 				die(self::send(array('status' => 'success')));
 			
 			$limit = $start = null;

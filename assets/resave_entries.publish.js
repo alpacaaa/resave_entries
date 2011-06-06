@@ -11,8 +11,8 @@ jQuery(function($){
 		logger = $('<span />');
 
 	if (!fieldset.length) return;
-	
-		
+
+
 	fieldset.append(logger).find('button').click(function(e){
 		e.preventDefault();
 
@@ -26,7 +26,7 @@ jQuery(function($){
 
 		self.attr('disabled', 'disabled');
 		logger.text(_('Processing...'));
-		
+
 		var doAjax = function(){
 			var data = {resave: {rate: rate, section: section, page: page, total: total}, 'action[resave]': 'doIt!'};
 
@@ -56,7 +56,7 @@ jQuery(function($){
 				}
 			});
 		};
-		
+
 		doAjax();
 	});
 });
