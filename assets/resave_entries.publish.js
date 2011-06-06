@@ -6,23 +6,26 @@ Symphony.Language.add({
 
 jQuery(function($){
 
-	var fieldset = $('.resave-entries');
+	var _ = Symphony.Language.get;
+	var fieldset = $('.resave-entries'),
+		logger = $('<span />');
+
 	if (!fieldset.length) return;
 	
-	var _ = Symphony.Language.get;
-
-	fieldset.find('button').click(function(e){
+		
+	fieldset.append(logger).find('button').click(function(e){
 		e.preventDefault();
 
 		var rate = fieldset.find('input').val(),
+			self = $(this),
 			section = fieldset.find('select').val(),
 			page = 1, total = 0;
 
 		rate = parseInt(rate);
 		if (isNaN(rate)) return; // -.-
-		
-		var logger = $('<span />').text(_('Processing...'));
-		fieldset.find('button').replaceWith(logger);
+
+		self.attr('disabled', 'disabled');
+		logger.text(_('Processing...'));
 		
 		var doAjax = function(){
 			var data = {resave: {rate: rate, section: section, page: page, total: total}, 'action[resave]': 'doIt!'};
@@ -32,7 +35,10 @@ jQuery(function($){
 				data: data,
 				success: function(res){
 					if (res.status == 'success')
+					{
+						self.attr('disabled', null);
 						return logger.text(_('Done') + '!');
+					}
 
 					total = parseInt(res.total);
 					logger.text(_('Processing {$page} of {$total}', {page: page, total: total}));
@@ -41,7 +47,9 @@ jQuery(function($){
 					if (res.status == 'processing')
 						doAjax();
 				},
+
 				error: function(){
+					self.attr('disabled', null);
 					logger.text(_(
 						'Looks like the request cannot be completed. Lowering entries per page might be a good idea :)'
 					));
