@@ -82,7 +82,7 @@ class extension_resave_entries extends Extension
 			}
 			
 			if ($rate && !$total)
-				$total = $em->fetchCount($id) / $rate;
+				$total = ceil($em->fetchCount($id) / $rate);
 			
 			if (!$rate) Administration::instance()->Page->pageAlert(__('Entries resaved succesfully.'), Alert::SUCCESS);
 			else die(self::send(array('status' => 'processing', 'total' => $total)));
