@@ -27,23 +27,25 @@ jQuery(function($){
 		var doAjax = function(){
 			var data = {resave: {rate: rate, section: section, page: page, total: total}, 'action[resave]': 'doIt!'};
 
-			$.get(window.location.href, data, function(res){
-				if (res == '')
-				{
-					return logger.text(_(
+			$.ajax({
+				url: window.location.href,
+				data: data,
+				success: function(res){
+					if (res.status == 'success')
+						return logger.text(_('Done') + '!');
+
+					total = parseInt(res.total);
+					logger.text(_('Processing {$page} of {$total}', {page: page, total: total}));
+					page++;
+
+					if (res.status == 'processing')
+						doAjax();
+				},
+				error: function(){
+					logger.text(_(
 						'Looks like the request cannot be completed. Lowering entries per page might be a good idea :)'
 					));
 				}
-				
-				if (res.status == 'success')
-					return logger.text(_('Done') + '!');
-
-				total = parseInt(res.total);
-				logger.text(_('Processing {$page} of {$total}', {page: page, total: total}));
-				page++;
-
-				if (res.status == 'processing')
-					doAjax();
 			});
 		};
 		
