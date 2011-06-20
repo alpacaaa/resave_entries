@@ -47,6 +47,7 @@ class extension_resave_entries extends Extension
 			$rate = $_REQUEST['resave']['rate'];
 			$page = $_REQUEST['resave']['page'];
 			$total = $_REQUEST['resave']['total'];
+			$callback = $_REQUEST['resave']['callback'];
 			
 			if ($total && $page > $total)
 				die(self::send(array('status' => 'success')));
@@ -56,6 +57,15 @@ class extension_resave_entries extends Extension
 			{
 				$limit = $rate;
 				$start = ($page -1) * $rate;
+			}
+			
+			if ($callback)
+			{
+				if (!function_exists($callback))
+					require_once EXTENSIONS. '/resave_entries/callback.php';
+				
+				if (!function_exists($callback))
+					die('Callback does not exist :('); // that's handling errors properly ;)
 			}
 			
 			require_once TOOLKIT. '/class.entrymanager.php';
@@ -77,6 +87,8 @@ class extension_resave_entries extends Extension
 				$ex->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$e, 'fields' => $fields));
 				$ex->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$e, 'fields' => $fields));
 
+				if ($callback) $callback(array('section' => $section, 'entry' => &$e, 'fields' => $fields));
+				
 				$e->commit();
 				$ex->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $e, 'fields' => $fields));
 			}
@@ -111,9 +123,17 @@ class extension_resave_entries extends Extension
 		$label->appendChild($select);
 		$group->appendChild($label);
 		
+		
+		$g = new XMLElement('div', null, array('class' => 'group'));
+		$group->appendChild($g);
+		
 		$label = Widget::Label(__('Entries to update per page'));
 		$label->appendChild(Widget::Input('resave[per-page]', 50));
-		$group->appendChild($label);
+		$g->appendChild($label);
+		
+		$label = Widget::Label(__('PHP callback'));
+		$label->appendChild(Widget::Input('resave[callback]', ''));
+		$g->appendChild($label);
 		
 		$span->appendChild(new XMLElement('button', __('Resave Entries'), array_merge(array('name' => 'action[resave]', 'type' => 'submit'))));
 

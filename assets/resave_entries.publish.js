@@ -16,11 +16,12 @@ jQuery(function($){
 	fieldset.append(logger).find('button').click(function(e){
 		e.preventDefault();
 
-		var rate = fieldset.find('input').val(),
+		var rate = fieldset.find("input[name *= 'per-page']").val(),
 			self = $(this),
 			section = fieldset.find('select').val(),
+			cb = fieldset.find("input[name *= 'callback']").val()
 			page = 1, total = 0;
-
+			
 		rate = parseInt(rate);
 		if (isNaN(rate)) return; // -.-
 
@@ -28,7 +29,7 @@ jQuery(function($){
 		logger.text(_('Processing...'));
 
 		var doAjax = function(){
-			var data = {resave: {rate: rate, section: section, page: page, total: total}, 'action[resave]': 'doIt!'};
+			var data = {resave: {rate: rate, section: section, page: page, total: total, callback: cb}, 'action[resave]': 'doIt!'};
 
 			$.ajax({
 				url: window.location.href,
