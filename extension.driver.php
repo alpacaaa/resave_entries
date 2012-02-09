@@ -128,7 +128,7 @@ class extension_resave_entries extends Extension
 		$group->appendChild($g);
 		
 		$label = Widget::Label(__('Entries to update per page'));
-		$label->appendChild(Widget::Input('resave[per-page]', 50));
+		$label->appendChild(Widget::Input('resave[per-page]', '50'));
 		$g->appendChild($label);
 		
 		$label = Widget::Label(__('PHP callback'));
