@@ -45,7 +45,7 @@ jQuery(function($){
 					logger.text(_('Processing {$page} of {$total}', {page: page, total: total}));
 					page++;
 
-					if (res.status == 'processing')
+					if (res.status == 'processing' && total > 0)
 						doAjax();
 				},
 

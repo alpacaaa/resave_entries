@@ -5,8 +5,8 @@ A simple Symphony CMS extension that let you resave your entries after structura
 
 - Author: Marco Sampellegrini ([alpacaaa](http://github.com/alpacaaa/))
 - Github repository: http://github.com/alpacaaa/resave_entries/
-- Release date: 6th June 2011
-- Version: 0.1
+- Release date: 30th March 2012
+- Version: 0.2
 
 
 ## Installation

@@ -2,19 +2,6 @@
 
 class extension_resave_entries extends Extension
 {
-	public function about()
-	{
-		return array(
-			'name' => 'Resave entries',
-			'version' => '0.1',
-			'release-date' => '2011-06-06',
-			'author' => array(
-				'name' => 'Marco Sampellegrini',
-				'email' => 'm@rcosa.mp'
-			)
-		);
-	}
-	
 	public function getSubscribedDelegates()
 	{
 		return array(
@@ -41,6 +28,8 @@ class extension_resave_entries extends Extension
 
 	public function AddCustomPreferenceFieldsets($context)
 	{
+		require_once TOOLKIT. '/class.entrymanager.php';
+
 		if (isset($_REQUEST['action']['resave']))
 		{
 			$id = $_REQUEST['resave']['section'];
@@ -69,17 +58,11 @@ class extension_resave_entries extends Extension
 			}
 			
 			require_once TOOLKIT. '/class.entrymanager.php';
-			$engine = Symphony::Engine();
 
-			$em = new EntryManager($engine);
-			$sm = new SectionManager($engine);
-			$fm = new FieldManager($engine);
-			$ex = new ExtensionManager($engine);
+			$entries = EntryManager::fetch($entry_id = null, $id, $limit, $start);
+			$fields  = FieldManager::fetch($field_id = null, $id);
+			$section = SectionManager::fetch($id);
 
-			$entries = $em->fetch($entry_id = null, $id, $limit, $start);
-			$fields  = $fm->fetch($field_id = null, $id);
-			$section = $sm->fetch($id);
-			
 			if (!empty($entries)) $entries[0]->checkPostData(array());
 
 			foreach ($entries as $e)
@@ -88,27 +71,24 @@ class extension_resave_entries extends Extension
 				$ex->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$e, 'fields' => $fields));
 
 				if ($callback) $callback(array('section' => $section, 'entry' => &$e, 'fields' => $fields));
-				
+
 				$e->commit();
 				$ex->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $e, 'fields' => $fields));
 			}
-			
+
 			if ($rate && !$total)
-				$total = ceil($em->fetchCount($id) / $rate);
-			
+				$total = ceil(EntryManager::fetchCount($id) / $rate);
+
 			if (!$rate) Administration::instance()->Page->pageAlert(__('Entries resaved succesfully.'), Alert::SUCCESS);
 			else die(self::send(array('status' => 'processing', 'total' => $total)));
 		}
-		
+
 		$group = new XMLElement('fieldset');
 		$group->setAttribute('class', 'settings resave-entries');
 		$group->appendChild(new XMLElement('legend', __('Resave entries'))); 
-		
+
 		$span = new XMLElement('span', NULL, array('class' => 'frame'));
-		
-		require_once TOOLKIT. '/class.sectionmanager.php';
-		$sm = new SectionManager(Symphony::Engine());
-		$sections = $sm->fetch();
+		$sections = SectionManager::fetch();
 
 		$options = array();
 		foreach ($sections as $s)
@@ -117,24 +97,24 @@ class extension_resave_entries extends Extension
 				$s->get('id'), false, $s->get('name')
 			);
 		}
-		
+
 		$label = Widget::Label(__('Section'));
 		$select = Widget::Select('resave[section]', $options);
 		$label->appendChild($select);
 		$group->appendChild($label);
-		
-		
+
+
 		$g = new XMLElement('div', null, array('class' => 'group'));
 		$group->appendChild($g);
-		
+
 		$label = Widget::Label(__('Entries to update per page'));
 		$label->appendChild(Widget::Input('resave[per-page]', '50'));
 		$g->appendChild($label);
-		
+
 		$label = Widget::Label(__('PHP callback'));
 		$label->appendChild(Widget::Input('resave[callback]', ''));
 		$g->appendChild($label);
-		
+
 		$span->appendChild(new XMLElement('button', __('Resave Entries'), array_merge(array('name' => 'action[resave]', 'type' => 'submit'))));
 
 		$group->appendChild($span);
