@@ -18,7 +18,7 @@ function callbackMethod($data) {
 }
 
 function callbackMethod($data, $field_id) {
-    // retrieve field's data 
+    // retrieve field's data
     $fieldData = $data['entry']->getData($field_id);
 
     // works only if the field exists into the section to update
@@ -41,3 +41,52 @@ function callbackMethod($data, $field_id) {
 }
 
 */
+
+function toMarkdown($data){
+    execMarkdown($data, 88);
+}
+
+function execMarkdown($data, $field_id){
+
+    // retrieve field's data
+    $fieldData = $data['entry']->getData($field_id);
+
+    // works only if the field exists into the section to update
+    if (!is_null($fieldData)) {
+
+        // recovering the field's value
+        $unformatted = $fieldData['value'];
+
+        if (!is_null($unformatted)) {
+
+            // call the transforming method
+            $formatted = markdownProcess($unformatted);
+
+            // taken from fieldTextarea->__applyFormatting()
+            include_once('/var/www/maschine/symphony/lib/toolkit/class.general.php');
+            include_once('/var/www/maschine/symphony/lib/toolkit/class.xsltprocess.php');
+            $errors = NULL;
+            if(!General::validateXML($formatted, $errors, false, new XsltProcess)){
+                $formatted = html_entity_decode($formatted, ENT_QUOTES, 'UTF-8');
+                $formatted = preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($formatted));
+            }
+
+            // updates the formatted value of the field's data
+            $data['entry']->setData($field_id, array(
+                'value' => $unformatted,
+                'value_formatted' => $formatted,
+            ));
+        }
+    }
+}
+
+function markdownProcess($text, $markdown_extra=false){
+
+    require_once('/var/www/maschine/extensions/markdown/lib/php-markdown-extra-1.2.4/markdown.php');
+
+    if($markdown_extra) $parser = new MarkdownExtra_Parser();
+    else $parser = new Markdown_Parser();
+
+    $result = stripslashes($parser->transform($text));
+    return $result;
+}
