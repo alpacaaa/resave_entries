@@ -63,8 +63,8 @@ function execMarkdown($data, $field_id){
             $formatted = markdownProcess($unformatted);
 
             // taken from fieldTextarea->__applyFormatting()
-            include_once('/var/www/maschine/symphony/lib/toolkit/class.general.php');
-            include_once('/var/www/maschine/symphony/lib/toolkit/class.xsltprocess.php');
+            include_once(TOOLKIT. '/class.general.php');
+            include_once(TOOLKIT. '/class.xsltprocess.php');
             $errors = NULL;
             if(!General::validateXML($formatted, $errors, false, new XsltProcess)){
                 $formatted = html_entity_decode($formatted, ENT_QUOTES, 'UTF-8');
@@ -82,7 +82,7 @@ function execMarkdown($data, $field_id){
 
 function markdownProcess($text, $markdown_extra=false){
 
-    require_once('/var/www/maschine/extensions/markdown/lib/php-markdown-extra-1.2.4/markdown.php');
+    require_once(EXTENSIONS. '/markdown/lib/php-markdown-extra-1.2.4/markdown.php');
 
     if($markdown_extra) $parser = new MarkdownExtra_Parser();
     else $parser = new Markdown_Parser();
