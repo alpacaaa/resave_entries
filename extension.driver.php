@@ -67,13 +67,13 @@ class extension_resave_entries extends Extension
 
 			foreach ($entries as $e)
 			{
-				$ex->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$e, 'fields' => $fields));
-				$ex->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$e, 'fields' => $fields));
+				ExtensionManager::notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$e, 'fields' => $fields));
+				ExtensionManager::notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$e, 'fields' => $fields));
 
 				if ($callback) $callback(array('section' => $section, 'entry' => &$e, 'fields' => $fields));
 
 				$e->commit();
-				$ex->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $e, 'fields' => $fields));
+				ExtensionManager::notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $e, 'fields' => $fields));
 			}
 
 			if ($rate && !$total)
