@@ -19,7 +19,7 @@ jQuery(function($){
 		var rate = fieldset.find("input[name *= 'per-page']").val(),
 			self = $(this),
 			section = fieldset.find('select').val(),
-			cb = fieldset.find("input[name *= 'callback']").val()
+			cb = fieldset.find("input[name *= 'callback']").val(),
 			page = 1, total = 0;
 			
 		rate = parseInt(rate);
