@@ -34,6 +34,7 @@ jQuery(function($){
 			$.ajax({
 				url: window.location.href,
 				data: data,
+				dataType: "json",
 				success: function(res){
 					if (res.status == 'success')
 					{
